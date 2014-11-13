@@ -1,4 +1,5 @@
 require 'csv'
+require 'json'
 
 def filter(keyword)
   csv = CSV.read("contacts.csv", "r:utf-8", :headers => true, :header_converters => :symbol)
@@ -6,11 +7,13 @@ def filter(keyword)
   outputs = '<?xml version="1.0"?><items>';
 
   csv.each do |twer|
-    if twer[:chinese_name].include? keyword
+    if twer.to_s.include? keyword
       outputs << %Q{
-        <item uid="desktop" arg="~/Desktop" valid="YES" autocomplete="Desktop" type="file">
+        <item uid="desktop" valid="YES" autocomplete="Desktop" type="file">
           <title>#{twer[:chinese_name]}</title>
-          <subtitle>~/Desktop</subtitle>
+          <arg>#{twer.to_hash.to_json}</arg>
+          <subtitle>Copy #{twer[:chinese_name]} to clipboard.</subtitle>
+          <subtitle mod="cmd">Copy #{twer[:email]} to clipboard.</subtitle>
           <icon type="fileicon">~/Desktop</icon>
         </item>
       }
